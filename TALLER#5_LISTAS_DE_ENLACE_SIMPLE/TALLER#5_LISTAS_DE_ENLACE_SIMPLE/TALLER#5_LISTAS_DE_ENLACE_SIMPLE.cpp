@@ -1,4 +1,5 @@
 #include <iostream>
+#include <string>
 
 using namespace std;
 
@@ -10,7 +11,7 @@ struct Nodo
 
 struct Nodo2
 {
-	string frase;
+	char letra;
 	Nodo2* siguiente;
 };
 
@@ -24,6 +25,7 @@ int main()
     Nodo* cabecera = NULL, *nuevoNodo = NULL, *temporal = NULL;
 	Nodo2* cabecera2 = NULL, *nuevoNodo2 = NULL, *temporal2 = NULL;
     int opcion = 1, cantidadPalabras = 0;
+	string frase = "";
 
     while (opcion == 1) 
     {
@@ -45,16 +47,24 @@ int main()
 		printf("\n Desea continuar ? (1:SI, 2: NO) ? :");
 		cin >> opcion;
     }
-
-	nuevoNodo2 = new (Nodo2);
+	cin.ignore();
 	printf("\nSuministre una frase:");
-	cin >> nuevoNodo2->frase;
-	nuevoNodo2->siguiente = NULL;
-
-	if (cabecera2 == NULL)
+	getline(cin, frase);
+	for (int i = 0; i < frase.length(); i++)
 	{
-		cabecera2 = nuevoNodo2;
-		temporal2 = cabecera2;
+		nuevoNodo2 = new (Nodo2);
+		nuevoNodo2->letra = frase[i];
+		nuevoNodo2->siguiente = NULL;
+		if (cabecera2 == NULL) 
+		{
+			cabecera2 = nuevoNodo2;
+			temporal2 = cabecera2;
+		}
+		else 
+		{
+			temporal2->siguiente = nuevoNodo2;
+			temporal2 = nuevoNodo2;
+		}
 	}
 
 	imprimirLista(cabecera);
@@ -132,12 +142,17 @@ int contarPalabras(Nodo2* cabecera2)
 {
 	Nodo2* temp = cabecera2;
 	int contador = 0;
-	for (int i = 0; i < temp->frase.length(); i++)
+
+	if (temp != NULL) 
 	{
-		char caracter = temp->frase[i];
-		if (caracter == ' ')
+		contador = 1;
+		while (temp != NULL)
 		{
-			contador++;
+			if (temp->letra == ' ')
+			{
+				contador++;
+			}
+			temp = temp->siguiente;
 		}
 	}
 	return contador;
