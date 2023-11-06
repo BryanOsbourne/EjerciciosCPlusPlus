@@ -1,0 +1,164 @@
+#include<iostream>
+#include<stdio.h>
+
+using namespace std;
+
+struct Cliente
+{
+	int cedula;
+	string nombre;
+	int numero_credito;
+	int valor_credito;
+	int saldo_credito;
+	string fecha;
+	Cliente* siguiente;
+};
+
+void aplicarPago(Cliente* cabecera, int cedula, int pago);
+void imprimir_lista(Cliente* cab);
+int buscarNumeroDeCreditosDeCliente(Cliente* cabecera, int cedula);
+
+int main()
+{
+	int opc = 1, cedula = 0, pago = 0;
+	struct Cliente* cab, * q = NULL, * nuevo = NULL;
+	cab = NULL;
+
+	while (opc == 1)
+	{
+		nuevo = new (Cliente);
+		printf("\nSuministre la cedula del cliente:");
+		cin >> nuevo->cedula;
+		printf("\nSuministre el nombre del cliente:");
+		cin >> nuevo->nombre;
+		printf("\nSuministre el numero credito del cliente:");
+		cin >> nuevo->numero_credito;
+		printf("\nSuministre el valor credito del cliente:");
+		cin >> nuevo->valor_credito;
+		printf("\nSuministre el saldo credito del cliente:");
+		cin >> nuevo->saldo_credito;
+		printf("\nSuministre la fecha del credito del cliente:");
+		cin >> nuevo->fecha;
+		nuevo->siguiente = NULL;
+
+		if (cab == NULL)
+		{
+			cab = nuevo;
+			q = cab;
+		}
+		else
+		{
+			q->siguiente = nuevo;
+			q = nuevo;
+		}
+		printf("\nDesea continuar ? (1:SI, 2: NO) ? :");
+		cin >> opc;
+	}
+
+	printf("\nSuministre la cedula del cliente:");
+	cin >> cedula;
+	printf("\nSuministre el pago del cliente:");
+	cin >> pago;
+	aplicarPago(cab, cedula, pago);
+	imprimir_lista(cab);
+
+}
+
+void aplicarPago(Cliente* cabecera, int cedula, int pago)
+{
+	Cliente* p = cabecera;
+	int diferencia = 0, numeroDeCreditos = 0;
+	bool primerCredito = true;
+
+	if (cabecera == NULL)
+	{
+		cout << "La lista esta vacia" << endl;
+	}
+	else
+	{
+		// Contamos el numero de credito que tiene el cliente para elegir el flujo correspondiente
+		numeroDeCreditos = buscarNumeroDeCreditosDeCliente(cabecera, cedula);
+
+		switch (numeroDeCreditos)
+		{
+		// Si el cliente no existe
+		case 0:
+			cout << "El cliente no posee creditos" << endl;
+			break;
+		// Si el cliente solo tiene 1 credito
+		case 1:
+			while (p != NULL)
+			{
+				if (p->cedula == cedula)
+				{
+					p->saldo_credito = p->saldo_credito - pago;
+				}
+				p = p->siguiente;
+			}
+			break;
+		default:
+			// Si el cliente tiene mas de un credito
+			while (p != NULL)
+			{
+				if (p->cedula == cedula)
+				{
+					if (diferencia != 0) 
+					{			
+						p->saldo_credito = p->saldo_credito + diferencia;
+						diferencia = p->saldo_credito;
+					}
+					else 
+					{
+						if (primerCredito)
+						{
+							p->saldo_credito = p->saldo_credito - pago;
+							diferencia = p->saldo_credito;
+							primerCredito = false;
+						}
+					}
+					numeroDeCreditos--;
+					if (numeroDeCreditos != 0 && diferencia != 0) 
+					{
+						p->saldo_credito = 0;
+					}
+				}
+				p = p->siguiente;
+			}
+			break;
+		}
+	}
+}
+
+int buscarNumeroDeCreditosDeCliente(Cliente* cabecera, int cedula) 
+{
+	Cliente* p = cabecera;
+	int cantidadDeCreditos = 0;
+
+	while (p != NULL) 
+	{
+		if (p->cedula == cedula) 
+		{
+			cantidadDeCreditos++;
+		}
+		p = p->siguiente;
+	}
+	return cantidadDeCreditos;
+}
+
+void imprimir_lista(Cliente* cab)
+{
+	Cliente* q;
+	q = cab;
+	cout << "\nInformacion De Los Clientes" << endl;
+	while (q != NULL)
+	{
+		cout << "\n\nNombre Del Cliente: " << q->nombre << endl;
+		cout << "Cedula: " << q->cedula << endl;
+		cout << "Numero Credito: " << q->numero_credito << endl;
+		cout << "Valor Credito: " << q->valor_credito << endl;
+		cout << "Saldo Credito: " << q->saldo_credito << endl;
+		cout << "Fecha Del Credito: " << q->fecha << endl;
+		q = q->siguiente;
+	};
+	printf("NULL  \n");
+}
