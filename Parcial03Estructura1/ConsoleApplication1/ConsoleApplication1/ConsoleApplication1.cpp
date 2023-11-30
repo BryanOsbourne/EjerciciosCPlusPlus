@@ -1,0 +1,249 @@
+#include <iostream>
+#include <regex>
+
+using namespace std;
+
+struct Nodo
+{
+	char caracter;
+	Nodo* siguiente;
+};
+
+void imprimirLista(Nodo* cabecera);
+bool validaciones(string email);
+void eliminarDominio(Nodo* cabecera);
+bool esUnaCuentaEducativa(Nodo* cabecera, bool &aux);
+
+
+int main()
+{
+	string email = "";
+	int opcion = 0;
+	bool bandera = true, aux = false, aux2 = false;
+	Nodo* cabecera = NULL, * temp = NULL;
+
+	while (bandera)
+	{
+		cout << "Ingresa una opcion valida: \n" << endl;
+		cout << "1) Registrar Correo Electronico" << endl;
+		cout << "2) Imprimir Correo Electronico." << endl;
+		cout << "3) Eliminar Dominio." << endl;
+		cout << "4) Verificar Si Es Una Cuenta Educativa." << endl;
+		cout << "5) Limpiar Consola." << endl;
+		cout << "6) Salir." << endl;
+		cin >> opcion;
+
+		switch (opcion)
+		{
+		case 1:
+			cout << "Ingrese el correo electronico del usuario" << endl;
+			cin >> email;
+			cabecera = NULL;
+			if (!email.empty())
+			{
+				if (validaciones(email))
+				{
+					for (int i = 0; i < email.size(); i++)
+					{
+						Nodo* nuevoNodo = new Nodo();
+						nuevoNodo->caracter = tolower(email[i]);
+						nuevoNodo->siguiente = NULL;
+
+						if (cabecera == NULL)
+						{
+							cabecera = nuevoNodo;
+							temp = cabecera;
+						}
+						else
+						{
+							temp->siguiente = nuevoNodo;
+							temp = nuevoNodo;
+						}
+					}
+					cout << "Cuenta de correo registrada" << endl;
+				}
+				else 
+				{
+					cout << "Cuenta de correo invalida" << endl;
+				}
+			}
+			else 
+			{
+				cout << "Ingrese un correo valido" << endl;
+			}
+			break;
+		case 2:
+			imprimirLista(cabecera);
+			break;
+		case 3:
+			eliminarDominio(cabecera);
+			break;
+		case 4:
+			aux2 = esUnaCuentaEducativa(cabecera, aux);
+			if (aux) 
+			{
+				if (aux2)
+				{
+					cout << "Es una cuenta educativa" << endl;
+				}
+				else 
+				{
+					cout << "No es una cuenta educativa" << endl;
+				}
+			}
+			break;
+		case 5:
+			system("cls");
+			break;
+		case 6:
+			cout << "!Adios!" << endl;
+			bandera = false;
+			break;
+		default:
+			cout << "\nOpcion Incorrecta, Intentelo Nuevamente.\n" << endl;
+			break;
+		}
+	}
+	return 0;
+}
+
+void imprimirLista(Nodo* cabecera)
+{
+	Nodo* tmp = cabecera;
+	if (cabecera == NULL) 
+	{
+		cout << "La lista esta vacia" << endl;
+	}
+	else 
+	{
+		while (tmp != NULL)
+		{
+			cout << tmp->caracter;
+			tmp = tmp->siguiente;
+		}
+	}
+	cout << endl;
+}
+
+bool validaciones(string email)
+{
+	bool nombreDeCuentaValido = false;
+	bool dominioValido = false;
+	bool contieneArroba = false;
+	bool contienePunto = false;
+	bool tipoDeCuentaValido = false;
+	string tipoDeCuenta = "";
+	string stringdominio = "";
+	string nombreDeCuenta = "";
+
+		for (int i = 0; i < email.size(); i++)
+		{
+			 
+			if (tolower(email[i]) == '@' || contieneArroba)
+			{
+				contieneArroba = true;
+
+				if (contieneArroba && contienePunto == false)
+				{
+					if (tolower(email[i]) != '@' && tolower(email[i]) != '.')
+					{
+						stringdominio += tolower(email[i]);
+					}
+				}
+
+				if (contienePunto)
+				{
+					tipoDeCuenta += tolower(email[i]);
+				}
+
+				if (email[i] == '.') 
+				{
+					contienePunto = true;
+				}
+			}
+			else 
+			{
+				nombreDeCuenta += tolower(email[i]);
+			}
+		}
+
+		const regex expReg("[a-z0-9]{1,}");
+		nombreDeCuentaValido = regex_match(nombreDeCuenta, expReg);
+
+		if (stringdominio.size() >= 3)
+		{
+			const regex expReg("[a-z]{3,}");
+			dominioValido = regex_match(stringdominio, expReg);
+		}
+
+		if (tipoDeCuenta == "com" || tipoDeCuenta == "org" || tipoDeCuenta == "edu")
+		{
+			tipoDeCuentaValido = true;
+		}
+
+	return contieneArroba && contienePunto && tipoDeCuentaValido && dominioValido && nombreDeCuentaValido;
+}
+
+void eliminarDominio(Nodo* cabecera) 
+{
+	Nodo* tmp = cabecera;
+	if (cabecera == NULL) 
+	{
+		cout << "La lista esta vacia" << endl;
+	}
+	else 
+	{
+		while (tmp != NULL)
+		{
+			if (tmp->caracter == '@')
+			{
+				tmp = tmp->siguiente;
+				while (tmp != NULL && tmp->caracter != '.')
+				{
+					tmp->caracter = NULL;
+					tmp = tmp->siguiente;
+				}
+			}
+			tmp = tmp->siguiente;
+		}
+		cout << "Dominio eliminado" << endl;
+	}
+}
+
+bool esUnaCuentaEducativa(Nodo* cabecera, bool &aux) 
+{
+	Nodo* tmp = cabecera;
+	bool inicioTipoCuenta = false;
+	bool esUnaCuentaEducativa = false;
+	string tipoCuenta = "";
+
+	if (cabecera == NULL)
+	{
+		cout << "La lista esta vacia" << endl;
+	}
+	else
+	{
+		aux = true;
+		while (tmp != NULL)
+		{
+			if (inicioTipoCuenta)
+			{
+				tipoCuenta += tmp->caracter;
+			}
+
+			if (tmp->caracter == '.')
+			{
+				inicioTipoCuenta = true;
+			}
+			tmp = tmp->siguiente;
+		}
+
+		if (tipoCuenta == "edu")
+		{
+			esUnaCuentaEducativa = true;
+		}
+	}
+	return esUnaCuentaEducativa;
+}
+
+

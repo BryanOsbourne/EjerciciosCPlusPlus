@@ -1,0 +1,52 @@
+procedimiento eliminarRepetidos(Pila *tope)
+{
+	bool existe = false;
+	Pila aux1, aux2;
+	Pila x, y;
+	
+	si (empty_p(tope))
+	{
+		escriba "La pila esta vacia";
+	}
+	si no 
+	{
+		mq(!empty_p(tope))
+		{ 
+			x = pop(tope); 
+			si(empty_p(aux1))
+			{	
+			    push(aux1, x);
+			}
+			si no
+			{
+				mq(!empty_p(aux1))
+				{
+					y = pop(aux1);
+					push(aux2, y);
+				}
+				mq(!empty_p(aux2))
+				{
+					y = pop(aux2);
+					si(y->numero == x->numero) 
+					{
+						existe = true;
+					}
+					push(aux1, y);
+				}
+				si(existe == false)
+				{
+					push(aux1, x);
+				}
+				si no 
+				{
+					existe = false;
+				}
+			}
+		}
+		mq(!empty_p(aux1))
+		{
+			y = pop(aux1);
+			push(tope, y);
+		}
+	}
+}
